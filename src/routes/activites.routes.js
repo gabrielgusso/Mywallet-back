@@ -3,12 +3,11 @@ import tokenValidation from "../middlewares/tokenValidation.middleware.js"
 import {Router} from "express"
 
 const router = Router()
-router.use(tokenValidation)
 
-router.post("/activity", postActivites)
+router.post("/activity",tokenValidation, postActivites)
 
-router.get("/activity", getActivites)
+router.get("/activity",tokenValidation, getActivites)
 
-router.get("/balance", getBalance)
+router.get("/balance",tokenValidation, getBalance)
 
 export default router
