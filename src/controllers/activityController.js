@@ -1,5 +1,6 @@
 import { activitySchema } from "../schemas/schemas.js"
 import { db } from "../database/db.js"
+import dayjs from "dayjs"
 
 export async function postActivites(req, res) {
     const activity = req.body
@@ -21,8 +22,10 @@ export async function postActivites(req, res) {
     }
   
     try {
+      let date = dayjs().locale("pt-br").format('MM/DD')
       await db.collection("activites").insertOne({
         userId: session.userId,
+        date,
         type,
         value,
         description,
@@ -59,7 +62,9 @@ export async function postActivites(req, res) {
     const token = authorization?.replace("Bearer ", "")
   
     const session = await db.collection("sessions").findOne({ token })
-  
+
+    const user = await db.collection("customers").findOne({ _id: session.userId })
+    delete user.password
     if (!session) {
       return res.sendStatus(401)
     }
@@ -70,6 +75,7 @@ export async function postActivites(req, res) {
         .find({ userId: session.userId })
         .toArray()
       let balance = 0
+
       activitys.forEach((e) => {
         if(e.type === "entry"){
           balance += Number(e.value)
@@ -78,7 +84,11 @@ export async function postActivites(req, res) {
         }
         
       })
-      return res.send(balance.toString())
+      const balanceAndUser = {
+        balance,
+        user
+      }
+      return res.send(balanceAndUser)
     } catch (error) {
       console.log(error)
     }

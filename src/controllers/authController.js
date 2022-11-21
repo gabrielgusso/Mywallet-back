@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid"
 import { loginSchema, registerSchema } from "../schemas/schemas.js"
 import { db } from "../database/db.js"
 
+
 export async function signUp(req, res){
   const register = req.body
   const { username, email, password } = register
